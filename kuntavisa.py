@@ -1,10 +1,6 @@
-"""
-http://fi.wikipedia.org/wiki/Luettelo_Suomen_kunnista
-"""
-
 import random  # not for cryptographic use!
 
-# maakunnat sijaintimuodossa (inessiivi/adessiivi)
+# regions ("maakunnat") in "locative" (inessive/adessive)
 REGIONS = {
     0: "Ahvenanmaalla",
     1: "Etelä-Karjalassa",
@@ -27,7 +23,10 @@ REGIONS = {
     18: "Varsinais-Suomessa",
 }
 
-# kunnat (maakunnan numero, onko kaupunki, asukasluku)
+# cities; key: name, value:
+# region number,
+# is a real city ("kaupunki") instead of a municipality ("kunta"),
+# population
 CITIES = {
     "Akaa": (11, True, 16779),
     "Alajärvi": (2, True, 9817),
@@ -342,7 +341,7 @@ CITIES = {
     "Äänekoski": (7, True, 19092),
 }
 
-# montako vastausvaihtoehtoa; 2-8, koska maakunnissa on vähimmillään 7 kuntaa
+# how many choices; 2-8 because a region may have as few as 7 cities
 # (Kymenlaakso)
 ANSWER_COUNT = 4
 
