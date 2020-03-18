@@ -3,6 +3,8 @@
 import random  # not for cryptographic use!
 import sys
 
+NUMBER_OF_ROUNDS = 10
+
 # regions ("maakunnat") in "locative" (inessive/adessive)
 REGION_NAMES = {
     0: "Ahvenanmaalla",
@@ -341,8 +343,7 @@ CITIES = {
     "Äänekoski": 7,
 }
 
-# how many choices; 2-8 because a region may have as few as 7 cities
-# (Kymenlaakso)
+# how many choices; 2-8 because a region may have as few as 7 cities (Kymenlaakso)
 ANSWER_COUNT = 4
 
 def which_city_in_region():
@@ -449,13 +450,12 @@ def ask_outer():
 def main():
     """The main function."""
 
-    numberOfRounds = 10
     points = 0
-    for round_ in range(numberOfRounds):
-        print("Kysymys {:d}/{:d}:".format(round_ + 1, numberOfRounds))
+    for round_ in range(NUMBER_OF_ROUNDS):
+        print("Kysymys {:d}/{:d}:".format(round_ + 1, NUMBER_OF_ROUNDS))
         points += ask_outer()
         print()
-    print("Pisteesi: {:d}/{:d}".format(points, numberOfRounds))
+    print("Pisteesi: {:d}/{:d}".format(points, NUMBER_OF_ROUNDS))
 
 if __name__ == "__main__":
     main()
