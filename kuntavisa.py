@@ -1,4 +1,8 @@
-"""A quiz of Finnish cities and regions."""
+"""A quiz of Finnish cities and regions.
+
+TODO: update city info.
+TODO: hard/easy mode: correct and incorrect region are always/never neighbors.
+"""
 
 import random  # not for cryptographic use!
 import sys
@@ -348,7 +352,7 @@ ANSWER_COUNT = 4
 
 def which_city_in_region():
     """Question: "Which city is in region X?"
-    return: (str question, str region, str correct_city, set wrong_cities_as_str)"""
+    return: (question, region, correct city, wrong cities)"""
 
     correctCity = random.choice(list(CITIES))
     region = CITIES[correctCity]
@@ -357,19 +361,44 @@ def which_city_in_region():
     return ("Mikä kunta on {:s}?", REGION_NAMES[region], correctCity, wrongCities)
 
 def which_city_not_in_region():
-    """Question: "Which city is not in region X?"
-    return: (str question, str region, str correct_city, set wrong_cities_as_str)"""
+    """Question: "Which city is NOT in region X?"
+    return: (question, region, correct city, wrong cities)"""
 
     region = CITIES[random.choice(list(CITIES))]
-    wrongCities = set(city for city in CITIES if CITIES[city] == region)
-    correctCities = set(CITIES) - wrongCities
-    correctCity = random.choice(list(correctCities))
-    wrongCities = set(random.sample(wrongCities, ANSWER_COUNT - 1))
+    wrongCitiesAll = set(city for city in CITIES if CITIES[city] == region)
+    correctCity = random.choice(list(set(CITIES) - wrongCitiesAll))
+    wrongCities = set(random.sample(wrongCitiesAll, ANSWER_COUNT - 1))
     return ("Mikä kunta EI ole {:s}?", REGION_NAMES[region], correctCity, wrongCities)
+
+def which_city_in_same_region():
+    """Question: "Which city is in the same region as city X?"
+    return: (question, city, correct city, wrong cities)"""
+
+    questionCity = random.choice(list(CITIES))
+    correctCitiesAll = set(city for city in CITIES if CITIES[city] == CITIES[questionCity])
+    return (
+        "Mikä kunta on samassa maakunnassa kuin {:s}?",
+        questionCity,
+        random.choice(list(correctCitiesAll - set((questionCity,)))),
+        set(random.sample(set(CITIES) - correctCitiesAll, ANSWER_COUNT - 1))
+    )
+
+def which_city_not_in_same_region():
+    """Question: "Which city is NOT in the same region as city X?"
+    return: (question, city, correct city, wrong cities)"""
+
+    questionCity = random.choice(list(CITIES))
+    wrongCitiesAll = set(city for city in CITIES if CITIES[city] == CITIES[questionCity])
+    return (
+        "Mikä kunta EI ole samassa maakunnassa kuin {:s}?",
+        questionCity,
+        random.choice(list(set(CITIES) - wrongCitiesAll)),
+        set(random.sample(wrongCitiesAll - set((questionCity,)), ANSWER_COUNT - 1))
+    )
 
 def where_city():
     """Question: "Where is city X?"
-    return: (str question, str city, str correct_region, set wrong_regions_as_str)"""
+    return: (question, city, correct region, wrong regions)"""
 
     city = random.choice(list(CITIES))
     correctRegion = CITIES[city]
@@ -385,10 +414,11 @@ def ask_inner(question, answers):
 
     answers = list(answers)
     random.shuffle(answers)
+    print(question)
+    for (i, answer) in enumerate(answers):
+        print("  {:d}) {:s}".format(i + 1, answer))
+
     while True:
-        print(question)
-        for (i, answer) in enumerate(answers):
-            print("  {:d}) {:s}".format(i + 1, answer))
         inp = input("Vastaus ({:d}-{:d} tai Enter=lopeta)? ".format(1, ANSWER_COUNT))
         if inp == "":
             sys.exit()
@@ -398,35 +428,79 @@ def ask_inner(question, answers):
                 return answers[inp - 1]
         except ValueError:
             pass
-        print("Vastaus ei kelpaa.")
 
 def explain_right_answer(question, questionPlace, answer):
     """Explain why the answer was correct."""
 
-    if question is where_city:
-        return "Oikein, {:s} on {:s}.".format(questionPlace, answer)
     if question is which_city_in_region:
-        return "Oikein, {:s} on {:s}.".format(answer, questionPlace)
+        return "{city} on {region}.".format(
+            city=answer,
+            region=questionPlace
+        )
     if question is which_city_not_in_region:
-        return "Oikein, {:s} ei ole {:s} vaan {:s}.".format(
-            answer, questionPlace, REGION_NAMES[CITIES[answer]]
+        return "{city} on {region}.".format(
+            city=answer,
+            region=REGION_NAMES[CITIES[answer]]
+        )
+    if question is which_city_in_same_region:
+        return "{questionCity} ja {answerCity} ovat {region}.".format(
+            questionCity=questionPlace,
+            answerCity=answer,
+            region=REGION_NAMES[CITIES[answer]]
+        )
+    if question is which_city_not_in_same_region:
+        return "{questionCity} on {questionRegion} ja {answerCity} {answerRegion}.".format(
+            questionCity=questionPlace,
+            questionRegion=REGION_NAMES[CITIES[questionPlace]],
+            answerCity=answer,
+            answerRegion=REGION_NAMES[CITIES[answer]]
+        )
+    if question is where_city:
+        return "{city} on {region}.".format(
+            city=questionPlace,
+            region=answer
         )
     sys.exit(1)  # should never happen
 
 def explain_wrong_answer(question, questionPlace, answer, rightAnswer):
     """Explain why the answer was wrong."""
 
-    if question is where_city:
-        return "Väärin, {:s} on {:s} eikä {:s}.".format(
-            questionPlace, REGION_NAMES[CITIES[questionPlace]], answer
-        )
     if question is which_city_in_region:
-        return "Väärin, {:s} on {:s}.".format(
-            answer, REGION_NAMES[CITIES[answer]]
+        return "{correctCity} on {correctRegion}, {answerCity} {answerRegion}.".format(
+            correctCity=rightAnswer,
+            correctRegion=REGION_NAMES[CITIES[rightAnswer]],
+            answerCity=answer,
+            answerRegion=REGION_NAMES[CITIES[answer]]
         )
     if question is which_city_not_in_region:
-        return "Väärin, {:s} on {:s}. ({:s} sen sijaan on {:s}.)".format(
-            answer, questionPlace, rightAnswer, REGION_NAMES[CITIES[rightAnswer]]
+        return "{answerCity} on {answerRegion} mutta {correctCity} {correctRegion}.".format(
+            answerCity=answer,
+            answerRegion=REGION_NAMES[CITIES[answer]],
+            correctCity=rightAnswer,
+            correctRegion=REGION_NAMES[CITIES[rightAnswer]]
+        )
+    if question is which_city_in_same_region:
+        return "{questionCity} ja {correctCity} ovat {questionRegion} mutta {answerCity} " \
+        "{answerRegion}.".format(
+            questionCity=questionPlace,
+            correctCity=rightAnswer,
+            questionRegion=REGION_NAMES[CITIES[questionPlace]],
+            answerCity=answer,
+            answerRegion=REGION_NAMES[CITIES[answer]]
+        )
+    if question is which_city_not_in_same_region:
+        return "{questionCity} ja {answerCity} ovat {questionRegion} mutta {correctCity} " \
+        "{correctRegion}.".format(
+            questionCity=questionPlace,
+            answerCity=answer,
+            questionRegion=REGION_NAMES[CITIES[questionPlace]],
+            correctCity=rightAnswer,
+            correctRegion=REGION_NAMES[CITIES[rightAnswer]]
+        )
+    if question is where_city:
+        return "{questionCity} on {questionRegion}.".format(
+            questionCity=questionPlace,
+            questionRegion=REGION_NAMES[CITIES[questionPlace]]
         )
     sys.exit(1)  # should never happen
 
@@ -434,17 +508,24 @@ def ask_outer():
     """Create question, ask, give feedback.
     return: was answer correct"""
 
-    question = random.choice((which_city_in_region, which_city_not_in_region, where_city))
+    question = random.choice((
+        which_city_in_region,
+        which_city_not_in_region,
+        which_city_in_same_region,
+        which_city_not_in_same_region,
+        where_city,
+    ))
     (text, cityOrRegion, rightAnswer, wrongAnswers) = question()
+    #print("Oikea vastaus:", rightAnswer)
 
     text = text.format(cityOrRegion)
     allAnswers = set((rightAnswer,)) | wrongAnswers
     answer = ask_inner(text, allAnswers)
 
     if answer == rightAnswer:
-        print(explain_right_answer(question, cityOrRegion, answer))
+        print("Oikein. " + explain_right_answer(question, cityOrRegion, answer))
         return True
-    print(explain_wrong_answer(question, cityOrRegion, answer, rightAnswer))
+    print("Väärin. " + explain_wrong_answer(question, cityOrRegion, answer, rightAnswer))
     return False
 
 def main():
@@ -459,3 +540,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
