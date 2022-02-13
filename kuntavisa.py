@@ -1,44 +1,41 @@
-"""A quiz of Finnish cities and regions.
+# a quiz of Finnish cities/municipalities and regions
+# source: https://fi.wikipedia.org/wiki/Luettelo_Suomen_kunnista
+# TODO: hard/easy mode: correct and incorrect region are always/never neighbors
 
-TODO: update city info.
-TODO: hard/easy mode: correct and incorrect region are always/never neighbors.
-"""
-
-import random  # not for cryptographic use!
-import sys
+import random, sys  # note: "random" is not for cryptographic use
 
 NUMBER_OF_ROUNDS = 10
 
 # regions ("maakunnat") in "locative" (inessive/adessive)
 REGION_NAMES = {
-    0: "Ahvenanmaalla",
-    1: "Etelä-Karjalassa",
-    2: "Etelä-Pohjanmaalla",
-    3: "Etelä-Savossa",
-    4: "Kainuussa",
-    5: "Kanta-Hämeessä",
-    6: "Keski-Pohjanmaalla",
-    7: "Keski-Suomessa",
-    8: "Kymenlaaksossa",
-    9: "Lapissa",
-    10: "Päijät-Hämeessä",
-    11: "Pirkanmaalla",
-    12: "Pohjanmaalla",
-    13: "Pohjois-Karjalassa",
-    14: "Pohjois-Pohjanmaalla",
-    15: "Pohjois-Savossa",
+     0: "Ahvenanmaalla",
+     1: "Etelä-Karjalassa",
+     2: "Etelä-Pohjanmaalla",
+     3: "Etelä-Savossa",
+     4: "Kainuussa",
+     5: "Kanta-Hämeessä",
+     6: "Keski-Pohjanmaalla",
+     7: "Keski-Suomessa",
+     8: "Kymenlaaksossa",
+     9: "Lapissa",
+    10: "Pirkanmaalla",
+    11: "Pohjanmaalla",
+    12: "Pohjois-Karjalassa",
+    13: "Pohjois-Pohjanmaalla",
+    14: "Pohjois-Savossa",
+    15: "Päijät-Hämeessä",
     16: "Satakunnassa",
     17: "Uudellamaalla",
     18: "Varsinais-Suomessa",
 }
 
-# cities (value: region number)
+# cities/municipalities (value: region number)
 CITIES = {
-    "Akaa": 11,
+    "Akaa": 10,
     "Alajärvi": 2,
-    "Alavieska": 14,
+    "Alavieska": 13,
     "Alavus": 2,
-    "Asikkala": 10,
+    "Asikkala": 15,
     "Askola": 17,
     "Aura": 18,
     "Brändö": 0,
@@ -53,59 +50,58 @@ CITIES = {
     "Forssa": 5,
     "Föglö": 0,
     "Geta": 0,
-    "Haapajärvi": 14,
-    "Haapavesi": 14,
-    "Hailuoto": 14,
+    "Haapajärvi": 13,
+    "Haapavesi": 13,
+    "Hailuoto": 13,
     "Halsua": 6,
     "Hamina": 8,
     "Hammarland": 0,
     "Hankasalmi": 7,
     "Hanko": 17,
     "Harjavalta": 16,
-    "Hartola": 10,
+    "Hartola": 15,
     "Hattula": 5,
     "Hausjärvi": 5,
-    "Heinola": 10,
-    "Heinävesi": 3,
+    "Heinola": 15,
+    "Heinävesi": 12,
     "Helsinki": 17,
     "Hirvensalmi": 3,
-    "Hollola": 10,
-    "Honkajoki": 16,
+    "Hollola": 15,
     "Huittinen": 16,
     "Humppila": 5,
     "Hyrynsalmi": 4,
     "Hyvinkää": 17,
-    "Hämeenkyrö": 11,
+    "Hämeenkyrö": 10,
     "Hämeenlinna": 5,
-    "Ii": 14,
-    "Iisalmi": 15,
-    "Iitti": 8,
-    "Ikaalinen": 11,
+    "Ii": 13,
+    "Iisalmi": 14,
+    "Iitti": 15,
+    "Ikaalinen": 10,
     "Ilmajoki": 2,
-    "Ilomantsi": 13,
+    "Ilomantsi": 12,
     "Imatra": 1,
     "Inari": 9,
     "Inkoo": 17,
     "Isojoki": 2,
-    "Isokyrö": 12,
+    "Isokyrö": 2,
     "Janakkala": 5,
-    "Joensuu": 13,
+    "Joensuu": 12,
     "Jokioinen": 5,
     "Jomala": 0,
-    "Joroinen": 3,
+    "Joroinen": 14,
     "Joutsa": 7,
-    "Juuka": 13,
-    "Juupajoki": 11,
+    "Juuka": 12,
+    "Juupajoki": 10,
     "Juva": 3,
     "Jyväskylä": 7,
     "Jämijärvi": 16,
     "Jämsä": 7,
     "Järvenpää": 17,
     "Kaarina": 18,
-    "Kaavi": 15,
+    "Kaavi": 14,
     "Kajaani": 4,
-    "Kalajoki": 14,
-    "Kangasala": 11,
+    "Kalajoki": 13,
+    "Kangasala": 10,
     "Kangasniemi": 3,
     "Kankaanpää": 16,
     "Kannonkoski": 7,
@@ -114,303 +110,300 @@ CITIES = {
     "Karkkila": 17,
     "Karstula": 7,
     "Karvia": 16,
-    "Kaskinen": 12,
+    "Kaskinen": 11,
     "Kauhajoki": 2,
     "Kauhava": 2,
     "Kauniainen": 17,
     "Kaustinen": 6,
-    "Keitele": 15,
+    "Keitele": 14,
     "Kemi": 9,
     "Kemijärvi": 9,
     "Keminmaa": 9,
     "Kemiönsaari": 18,
-    "Kempele": 14,
+    "Kempele": 13,
     "Kerava": 17,
     "Keuruu": 7,
-    "Kihniö": 11,
+    "Kihniö": 10,
     "Kinnula": 7,
     "Kirkkonummi": 17,
-    "Kitee": 13,
+    "Kitee": 12,
     "Kittilä": 9,
-    "Kiuruvesi": 15,
+    "Kiuruvesi": 14,
     "Kivijärvi": 7,
     "Kokemäki": 16,
     "Kokkola": 6,
     "Kolari": 9,
     "Konnevesi": 7,
-    "Kontiolahti": 13,
-    "Korsnäs": 12,
+    "Kontiolahti": 12,
+    "Korsnäs": 11,
     "Koski Tl": 18,
     "Kotka": 8,
     "Kouvola": 8,
-    "Kristiinankaupunki": 12,
-    "Kruunupyy": 12,
+    "Kristiinankaupunki": 11,
+    "Kruunupyy": 11,
     "Kuhmo": 4,
-    "Kuhmoinen": 7,
+    "Kuhmoinen": 10,
     "Kumlinge": 0,
-    "Kuopio": 15,
+    "Kuopio": 14,
     "Kuortane": 2,
     "Kurikka": 2,
     "Kustavi": 18,
-    "Kuusamo": 14,
+    "Kuusamo": 13,
     "Kyyjärvi": 7,
-    "Kärkölä": 10,
-    "Kärsämäki": 14,
+    "Kärkölä": 15,
+    "Kärsämäki": 13,
     "Kökar": 0,
-    "Lahti": 10,
-    "Laihia": 12,
+    "Lahti": 15,
+    "Laihia": 11,
     "Laitila": 18,
     "Lapinjärvi": 17,
-    "Lapinlahti": 15,
+    "Lapinlahti": 14,
     "Lappajärvi": 2,
     "Lappeenranta": 1,
     "Lapua": 2,
     "Laukaa": 7,
     "Lemi": 1,
     "Lemland": 0,
-    "Lempäälä": 11,
-    "Leppävirta": 15,
+    "Lempäälä": 10,
+    "Leppävirta": 14,
     "Lestijärvi": 6,
-    "Lieksa": 13,
+    "Lieksa": 12,
     "Lieto": 18,
-    "Liminka": 14,
-    "Liperi": 13,
+    "Liminka": 13,
+    "Liperi": 12,
     "Lohja": 17,
     "Loimaa": 18,
     "Loppi": 5,
     "Loviisa": 17,
     "Luhanka": 7,
-    "Lumijoki": 14,
+    "Lumijoki": 13,
     "Lumparland": 0,
-    "Luoto": 12,
+    "Luoto": 11,
     "Luumäki": 1,
-    "Maalahti": 12,
+    "Maalahti": 11,
     "Maarianhamina": 0,
     "Marttila": 18,
     "Masku": 18,
-    "Merijärvi": 14,
+    "Merijärvi": 13,
     "Merikarvia": 16,
     "Miehikkälä": 8,
     "Mikkeli": 3,
-    "Muhos": 14,
+    "Muhos": 13,
     "Multia": 7,
     "Muonio": 9,
-    "Mustasaari": 12,
+    "Mustasaari": 11,
     "Muurame": 7,
     "Mynämäki": 18,
     "Myrskylä": 17,
     "Mäntsälä": 17,
-    "Mänttä-Vilppula": 11,
+    "Mänttä-Vilppula": 10,
     "Mäntyharju": 3,
     "Naantali": 18,
     "Nakkila": 16,
-    "Nivala": 14,
-    "Nokia": 11,
+    "Nivala": 13,
+    "Nokia": 10,
     "Nousiainen": 18,
-    "Nurmes": 13,
+    "Nurmes": 12,
     "Nurmijärvi": 17,
-    "Närpiö": 12,
-    "Orimattila": 10,
+    "Närpiö": 11,
+    "Orimattila": 15,
     "Oripää": 18,
-    "Orivesi": 11,
-    "Oulainen": 14,
-    "Oulu": 14,
-    "Outokumpu": 13,
-    "Padasjoki": 10,
+    "Orivesi": 10,
+    "Oulainen": 13,
+    "Oulu": 13,
+    "Outokumpu": 12,
+    "Padasjoki": 15,
     "Paimio": 18,
     "Paltamo": 4,
     "Parainen": 18,
     "Parikkala": 1,
-    "Parkano": 11,
-    "Pedersören kunta": 12,
+    "Parkano": 10,
+    "Pedersören kunta": 11,
     "Pelkosenniemi": 9,
     "Pello": 9,
     "Perho": 6,
     "Pertunmaa": 3,
     "Petäjävesi": 7,
     "Pieksämäki": 3,
-    "Pielavesi": 15,
-    "Pietarsaari": 12,
+    "Pielavesi": 14,
+    "Pietarsaari": 11,
     "Pihtipudas": 7,
-    "Pirkkala": 11,
-    "Polvijärvi": 13,
+    "Pirkkala": 10,
+    "Polvijärvi": 12,
     "Pomarkku": 16,
     "Pori": 16,
     "Pornainen": 17,
     "Porvoo": 17,
     "Posio": 9,
-    "Pudasjärvi": 14,
+    "Pudasjärvi": 13,
     "Pukkila": 17,
-    "Punkalaidun": 11,
+    "Punkalaidun": 10,
     "Puolanka": 4,
     "Puumala": 3,
     "Pyhtää": 8,
-    "Pyhäjoki": 14,
-    "Pyhäjärvi": 14,
-    "Pyhäntä": 14,
+    "Pyhäjoki": 13,
+    "Pyhäjärvi": 13,
+    "Pyhäntä": 13,
     "Pyhäranta": 18,
-    "Pälkäne": 11,
+    "Pälkäne": 10,
     "Pöytyä": 18,
-    "Raahe": 14,
+    "Raahe": 13,
     "Raasepori": 17,
     "Raisio": 18,
     "Rantasalmi": 3,
     "Ranua": 9,
     "Rauma": 16,
-    "Rautalampi": 15,
-    "Rautavaara": 15,
+    "Rautalampi": 14,
+    "Rautavaara": 14,
     "Rautjärvi": 1,
-    "Reisjärvi": 14,
+    "Reisjärvi": 13,
     "Riihimäki": 5,
     "Ristijärvi": 4,
     "Rovaniemi": 9,
     "Ruokolahti": 1,
-    "Ruovesi": 11,
+    "Ruovesi": 10,
     "Rusko": 18,
-    "Rääkkylä": 13,
+    "Rääkkylä": 12,
     "Saarijärvi": 7,
     "Salla": 9,
     "Salo": 18,
     "Saltvik": 0,
-    "Sastamala": 11,
+    "Sastamala": 10,
     "Sauvo": 18,
     "Savitaipale": 1,
     "Savonlinna": 3,
     "Savukoski": 9,
     "Seinäjoki": 2,
-    "Sievi": 14,
+    "Sievi": 13,
     "Siikainen": 16,
-    "Siikajoki": 14,
-    "Siikalatva": 14,
-    "Siilinjärvi": 15,
+    "Siikajoki": 13,
+    "Siikalatva": 13,
+    "Siilinjärvi": 14,
     "Simo": 9,
     "Sipoo": 17,
     "Siuntio": 17,
     "Sodankylä": 9,
     "Soini": 2,
     "Somero": 18,
-    "Sonkajärvi": 15,
+    "Sonkajärvi": 14,
     "Sotkamo": 4,
     "Sottunga": 0,
     "Sulkava": 3,
     "Sund": 0,
     "Suomussalmi": 4,
-    "Suonenjoki": 15,
-    "Sysmä": 10,
+    "Suonenjoki": 14,
+    "Sysmä": 15,
     "Säkylä": 16,
     "Taipalsaari": 1,
-    "Taivalkoski": 14,
+    "Taivalkoski": 13,
     "Taivassalo": 18,
     "Tammela": 5,
-    "Tampere": 11,
-    "Tervo": 15,
+    "Tampere": 10,
+    "Tervo": 14,
     "Tervola": 9,
     "Teuva": 2,
-    "Tohmajärvi": 13,
+    "Tohmajärvi": 12,
     "Toholampi": 6,
     "Toivakka": 7,
     "Tornio": 9,
     "Turku": 18,
-    "Tuusniemi": 15,
+    "Tuusniemi": 14,
     "Tuusula": 17,
-    "Tyrnävä": 14,
+    "Tyrnävä": 13,
     "Ulvila": 16,
-    "Urjala": 11,
-    "Utajärvi": 14,
+    "Urjala": 10,
+    "Utajärvi": 13,
     "Utsjoki": 9,
     "Uurainen": 7,
-    "Uusikaarlepyy": 12,
+    "Uusikaarlepyy": 11,
     "Uusikaupunki": 18,
-    "Vaala": 14,
-    "Vaasa": 12,
-    "Valkeakoski": 11,
-    "Valtimo": 13,
+    "Vaala": 13,
+    "Vaasa": 11,
+    "Valkeakoski": 10,
     "Vantaa": 17,
-    "Varkaus": 15,
+    "Varkaus": 14,
     "Vehmaa": 18,
-    "Vesanto": 15,
-    "Vesilahti": 11,
+    "Vesanto": 14,
+    "Vesilahti": 10,
     "Veteli": 6,
-    "Vieremä": 15,
+    "Vieremä": 14,
     "Vihti": 17,
     "Viitasaari": 7,
     "Vimpeli": 2,
     "Virolahti": 8,
-    "Virrat": 11,
+    "Virrat": 10,
     "Vårdö": 0,
-    "Vöyri": 12,
+    "Vöyri": 11,
     "Ylitornio": 9,
-    "Ylivieska": 14,
-    "Ylöjärvi": 11,
+    "Ylivieska": 13,
+    "Ylöjärvi": 10,
     "Ypäjä": 5,
     "Ähtäri": 2,
     "Äänekoski": 7,
 }
 
-# how many choices; 2-8 because a region may have as few as 7 cities (Kymenlaakso)
+# how many choices; 2-7 because a region may have as few as 6 cities (Kymenlaakso)
 ANSWER_COUNT = 4
 
 def which_city_in_region():
-    """Question: "Which city is in region X?"
-    return: (question, region, correct city, wrong cities)"""
+    # question: "Which city is in region X?"
+    # return: (question, region, correct_city, wrong_cities)
 
     correctCity = random.choice(list(CITIES))
     region = CITIES[correctCity]
-    wrongCitiesAll = set(city for city in CITIES if CITIES[city] != region)
+    wrongCitiesAll = [c for c in CITIES if CITIES[c] != region]
     wrongCities = set(random.sample(wrongCitiesAll, ANSWER_COUNT - 1))
     return ("Mikä kunta on {:s}?", REGION_NAMES[region], correctCity, wrongCities)
 
 def which_city_not_in_region():
-    """Question: "Which city is NOT in region X?"
-    return: (question, region, correct city, wrong cities)"""
+    # question: "Which city is NOT in region X?"
+    # return: (question, region, correct_city, wrong_cities)
 
     region = CITIES[random.choice(list(CITIES))]
-    wrongCitiesAll = set(city for city in CITIES if CITIES[city] == region)
+    wrongCitiesAll = {c for c in CITIES if CITIES[c] == region}
     correctCity = random.choice(list(set(CITIES) - wrongCitiesAll))
-    wrongCities = set(random.sample(wrongCitiesAll, ANSWER_COUNT - 1))
+    wrongCities = set(random.sample(list(wrongCitiesAll), ANSWER_COUNT - 1))
     return ("Mikä kunta EI ole {:s}?", REGION_NAMES[region], correctCity, wrongCities)
 
 def which_city_in_same_region():
-    """Question: "Which city is in the same region as city X?"
-    return: (question, city, correct city, wrong cities)"""
+    # question: "Which city is in the same region as city X?"
+    # return: (question, city, correct_city, wrong_cities)
 
     questionCity = random.choice(list(CITIES))
-    correctCitiesAll = set(city for city in CITIES if CITIES[city] == CITIES[questionCity])
+    correctCitiesAll = {c for c in CITIES if CITIES[c] == CITIES[questionCity]}
     return (
         "Mikä kunta on samassa maakunnassa kuin {:s}?",
         questionCity,
-        random.choice(list(correctCitiesAll - set((questionCity,)))),
-        set(random.sample(set(CITIES) - correctCitiesAll, ANSWER_COUNT - 1))
+        random.choice(list(correctCitiesAll - {questionCity})),
+        set(random.sample(list(set(CITIES) - correctCitiesAll), ANSWER_COUNT - 1))
     )
 
 def which_city_not_in_same_region():
-    """Question: "Which city is NOT in the same region as city X?"
-    return: (question, city, correct city, wrong cities)"""
+    # question: "Which city is NOT in the same region as city X?"
+    # return: (question, city, correct_city, wrong_cities)
 
     questionCity = random.choice(list(CITIES))
-    wrongCitiesAll = set(city for city in CITIES if CITIES[city] == CITIES[questionCity])
+    wrongCitiesAll = {c for c in CITIES if CITIES[c] == CITIES[questionCity]}
     return (
         "Mikä kunta EI ole samassa maakunnassa kuin {:s}?",
         questionCity,
         random.choice(list(set(CITIES) - wrongCitiesAll)),
-        set(random.sample(wrongCitiesAll - set((questionCity,)), ANSWER_COUNT - 1))
+        set(random.sample(list(wrongCitiesAll - {questionCity}), ANSWER_COUNT - 1))
     )
 
 def where_city():
-    """Question: "Where is city X?"
-    return: (question, city, correct region, wrong regions)"""
+    # question: "Where is city X?"
+    # return: (question, city, correct_region, wrong_regions)
 
     city = random.choice(list(CITIES))
     correctRegion = CITIES[city]
-    wrongRegions = random.sample(set(REGION_NAMES) - set((correctRegion,)), ANSWER_COUNT - 1)
-    wrongRegionNames = set(REGION_NAMES[region] for region in wrongRegions)
+    wrongRegions = random.sample(list(set(REGION_NAMES) - {correctRegion}), ANSWER_COUNT - 1)
+    wrongRegionNames = {REGION_NAMES[r] for r in wrongRegions}
     return ("Missä {:s} on?", city, REGION_NAMES[correctRegion], wrongRegionNames)
 
 def ask_inner(question, answers):
-    """Print question and answers, wait for valid input.
-    question: str
-    answers: set of strings
-    return: answer as string"""
+    # print a question and answers, wait for valid input
+    # question: str, answers: set of strings, return answer as str
 
     answers = list(answers)
     random.shuffle(answers)
@@ -430,7 +423,7 @@ def ask_inner(question, answers):
             pass
 
 def explain_right_answer(question, questionPlace, answer):
-    """Explain why the answer was correct."""
+    # explain why the answer was correct
 
     if question is which_city_in_region:
         return "{city} on {region}.".format(
@@ -463,7 +456,7 @@ def explain_right_answer(question, questionPlace, answer):
     sys.exit(1)  # should never happen
 
 def explain_wrong_answer(question, questionPlace, answer, rightAnswer):
-    """Explain why the answer was wrong."""
+    # explain why the answer was wrong
 
     if question is which_city_in_region:
         return "{correctCity} on {correctRegion}, {answerCity} {answerRegion}.".format(
@@ -505,8 +498,7 @@ def explain_wrong_answer(question, questionPlace, answer, rightAnswer):
     sys.exit(1)  # should never happen
 
 def ask_outer():
-    """Create question, ask, give feedback.
-    return: was answer correct"""
+    # ask a question, give feedback; return: was the answer correct?
 
     question = random.choice((
         which_city_in_region,
@@ -519,8 +511,9 @@ def ask_outer():
     #print("Oikea vastaus:", rightAnswer)
 
     text = text.format(cityOrRegion)
-    allAnswers = set((rightAnswer,)) | wrongAnswers
+    allAnswers = {rightAnswer} | wrongAnswers
     answer = ask_inner(text, allAnswers)
+    print()
 
     if answer == rightAnswer:
         print("Oikein. " + explain_right_answer(question, cityOrRegion, answer))
@@ -529,8 +522,6 @@ def ask_outer():
     return False
 
 def main():
-    """The main function."""
-
     points = 0
     for round_ in range(NUMBER_OF_ROUNDS):
         print("Kysymys {:d}/{:d}:".format(round_ + 1, NUMBER_OF_ROUNDS))
@@ -538,6 +529,4 @@ def main():
         print()
     print("Pisteesi: {:d}/{:d}".format(points, NUMBER_OF_ROUNDS))
 
-if __name__ == "__main__":
-    main()
-
+main()
