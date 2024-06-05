@@ -1,5 +1,6 @@
 # a quiz of Finnish cities/municipalities and regions
 # source: https://fi.wikipedia.org/wiki/Luettelo_Suomen_kunnista
+# the information is up to date as of June 2024
 # TODO: hard/easy mode: correct and incorrect region are always/never neighbors
 
 import random, sys  # note: "random" is not for cryptographic use
